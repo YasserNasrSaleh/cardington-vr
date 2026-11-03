@@ -15,7 +15,7 @@
   --c-col:#3F5566; --c-pri:#25313A; --c-sec:#8697A3; --c-core:#2A7A7E; --c-vb:#B23A26; --c-pb:#8455AE;
   --slab:#9AA6AB; --ground:#D3D9DA; --flag:#A9AFB2;
   --paving:#CDD1CE; --glass:#5E93A8; --spandrel:#3A474F; --mullion:#AEB6BA; --clad:#B3AB9E;
-  --plant:#5F8F55; --i-wall:#E4E1DA; --i-desk:#C9A77C; --i-screen:#6F8A8A; --i-chair:#2B3036; --i-sofa:#4E6A7B; --i-carpet:#5E6870;
+  --plant:#5F8F55; --i-wall:#E4E1DA; --i-desk:#C9A77C; --i-screen:#6F8A8A; --i-chair:#2B3036; --i-sofa:#4E6A7B; --i-carpet:#5E6870; --i-tread:#B9B5AD; --i-car:#8E979C; --i-wc:#7F9AA6;
   --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
@@ -90,6 +90,17 @@ main{display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:0}
 .pl-if{fill:var(--panel);fill-opacity:.55;stroke:var(--muted);stroke-width:.6}
 .pl-ip{fill:var(--plant)}
 .pl-clad{fill:var(--clad);stroke:var(--muted);stroke-width:.6}
+
+.walkhud{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:14px;z-index:3;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;max-width:min(380px,calc(100% - 190px));font-size:12.5px;display:flex;flex-direction:column;gap:3px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.walkhud b{font-family:var(--f-display);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.walkhud .k{color:var(--muted)}
+.walkpad{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:14px;z-index:3;display:grid;grid-template-columns:repeat(3,46px);grid-auto-rows:46px;gap:5px}
+.walkpad button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;font-size:15px;font-weight:600;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.walkpad button:active{background:var(--ink);color:var(--panel)}
+.walkpad .lv{font-family:var(--f-mono);font-size:11.5px}
+.xhair{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--hi);box-shadow:0 0 0 2px rgba(0,0,0,.3);z-index:2;pointer-events:none}
+body.walking .levels, body.walking #camSeg, body.walking .hint{display:none}
+@media (max-width:560px){.walkhud .k{display:none}}
 
 .levels{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;
   padding-block:10px 14px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));pointer-events:none}
@@ -199,8 +210,9 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
         <button class="pill" id="intBtn" aria-pressed="false" title="Show the interior fit-out: partitions, desks and meeting rooms"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 6.5h8.5M2.2 6.5V12M8.3 6.5V12M10.5 2v10M10.5 8.5h2.5V12"/></svg>Interiors</button>
       </div>
       <div class="bar top-r" id="cams">
+        <button class="pill vr" id="walkBtn" aria-pressed="false" title="Walk through the building at eye level"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="7.5" cy="2.3" r="1.3"/><path d="M7.2 4.6 6 8.4l2.6 1.4.6 3.2M6 8.4 4.4 13M6.9 5.2 4.3 6.8M7.6 5.6l2.4 1.6"/></svg><span id="walkLabel">Walk</span></button>
         <button class="pill vr" id="vrBtn" aria-pressed="false" disabled title="Checking for a VR headset…"><svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1.5 2.5h13v6.2a1.3 1.3 0 0 1-1.3 1.3h-3l-1.6-2.2a.8.8 0 0 0-1.2 0L6.8 10h-3a1.3 1.3 0 0 1-1.3-1.3z"/><circle cx="4.8" cy="5.8" r="1.4"/><circle cx="11.2" cy="5.8" r="1.4"/></svg><span id="vrLabel">Enter VR</span></button>
-        <div class="seg small" role="group" aria-label="Camera">
+        <div class="seg small" id="camSeg" role="group" aria-label="Camera">
           <button data-cam="iso" aria-pressed="false">Iso</button>
           <button data-cam="front" aria-pressed="false">Front</button>
           <button data-cam="end" aria-pressed="false">End</button>
@@ -208,6 +220,21 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
         </div>
       </div>
       <div class="hint" id="hint">Drag to orbit · right-drag to pan · scroll to zoom</div>
+
+      <div class="xhair" id="xhair" hidden></div>
+      <div class="walkhud" id="walkHud" hidden>
+        <b id="walkLvl">Ground  ±0.00 m</b>
+        <span class="k">W A S D or arrow keys to move, drag to look, hold Shift to run.</span>
+        <span class="k">E and Q go up or down a level. Click a floor to jump there, or a member to identify it. Esc exits.</span>
+      </div>
+      <div class="walkpad" id="walkPad" hidden>
+        <button class="lv" data-lv="1" aria-label="Up a level">L +</button>
+        <button data-k="KeyW" aria-label="Move forward">▲</button>
+        <button class="lv" data-lv="-1" aria-label="Down a level">L −</button>
+        <button data-k="ArrowLeft" aria-label="Turn left">◀</button>
+        <button data-k="KeyS" aria-label="Move back">▼</button>
+        <button data-k="ArrowRight" aria-label="Turn right">▶</button>
+      </div>
 
       <div class="levels">
         <div class="seg small" id="sublevels" role="group" aria-label="Typical level" hidden></div>
@@ -269,9 +296,13 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
           <span class="sw mat" style="background:var(--i-sofa)"></span><span>Lobby and breakout seating</span>
           <span class="sw mat" style="background:var(--i-carpet)"></span><span>Carpet tiles; stone floor in the reception lobby</span>
           <span class="sw mat" style="background:var(--plant)"></span><span>Planters</span>
+          <span class="sw mat" style="background:var(--i-tread)"></span><span>Dog-leg stairs in both stair cores, 24 risers per storey</span>
+          <span class="sw mat" style="background:var(--i-car)"></span><span>Two scenic lifts in glass shafts, running between all floors</span>
+          <span class="sw mat" style="background:var(--i-wc)"></span><span>Toilets in both cores: two rooms, each with two cubicles and a vanity</span>
         </div>
         <div class="notes">
           <p>A typical Category B office fit-out. Open-plan desking for up to 80 people per floor fills the 6.0 m bays along lines 1 to 2 and 3 to 4. Each side of the lift lobby has three glazed meeting rooms and a tea point. The ground floor has a reception lobby under the Level 1 void. The roof is not fitted out.</p>
+          <p>Press Walk to explore at eye level: the stairs can be climbed and the lifts ridden.</p>
           <p>With a level selected, only that floor is furnished.</p>
         </div>
       </div>
@@ -413,6 +444,7 @@ const LEVELS = [
 ];
 const state = { sel:"all", sub:null, view:"3d", fade:true, deck:true, grid:true, finish:false, finStyle:"curtain", interior:false };
 
+const zf = n => n === 0 ? 0 : elev(n) + 0.13;   // finished floor level
 /* ---------- Interior fit-out layout (plan m, heights above finished floor) ---------- */
 function interiorLayout(n){            // n = 0 ground ... 7: items standing on that floor
   const z = n === 0 ? 0 : elev(n) + 0.13, H = elev(n+1) - 0.55 - z, t = 0.12;
@@ -429,11 +461,38 @@ function interiorLayout(n){            // n = 0 ground ... 7: items standing on 
   R.forEach(r => B("carpet",r[0],r[1],r[2],r[3],0,0.015));
   if (n === 0) B("stone",18,27,0,8,0,0.02);
   // stair and toilet cores (A–A′ and E′–F, lines 2–3)
-  [[0,4,4],[41,45,41]].forEach(([a,b,inner]) => {
-    wall(inner-t/2,inner+t/2,6,15); wall(a,b,6-t/2,6+t/2); wall(a,b,15-t/2,15+t/2); wall(a,b,10.5-t/2,10.5+t/2);
+  const zTop = zf(n+1) - z, rz = zTop/24, gz = 0.25, yL = 11.56;
+  [[0,4,4,x=>x],[41,45,41,x=>45-x]].forEach(([a,b,inner,X]) => {
+    const BX = (mat,x0,x1,y0,y1,h0,h1) => { const p = X(x0), q = X(x1); B(mat,Math.min(p,q),Math.max(p,q),y0,y1,h0,h1); };
+    // core walls; the corridor wall has doors to the two toilets and the stair
+    [[6,6.2],[7.1,9.4],[10.3,10.6],[11.5,15]].forEach(([y0,y1]) => wall(inner-t/2,inner+t/2,y0,y1));
+    [[6.2,7.1],[9.4,10.3],[10.6,11.5]].forEach(([y0,y1]) => { B("wall",inner-t/2,inner+t/2,y0,y1,2.1,H); BX("door",3.1,3.94,y0+0.02,y0+0.06,0,2.08); });
+    wall(a,b,6-t/2,6+t/2); wall(a,b,15-t/2,15+t/2); wall(a,b,10.5-t/2,10.5+t/2); wall(a,b,8.25-t/2,8.25+t/2);
+    // toilets: two rooms between lines 2 and 2b, each with two cubicles and a two-basin vanity
+    [[6.06,8.19,7.69,8.19,8.13],[8.31,10.44,8.31,8.81,8.37]].forEach(([y0,y1,v0,v1,mY]) => {
+      const ym = (y0+y1)/2;
+      BX("wcpart",0.06,1.5,ym-0.02,ym+0.02,0.15,2.0);
+      BX("wcpart",1.5,1.55,y0,y0+0.12,0.15,2.0); BX("wcpart",1.5,1.55,ym-0.08,ym+0.08,0.15,2.0); BX("wcpart",1.5,1.55,y1-0.12,y1,0.15,2.0);
+      BX("wcdoor",1.5,1.55,y0+0.12,ym-0.08,0.15,2.0); BX("wcdoor",1.5,1.55,ym+0.08,y1-0.12,0.15,2.0);
+      [(y0+ym)/2,(ym+y1)/2].forEach(yc => { BX("san",0.06,0.72,yc-0.19,yc+0.19,0,0.42); BX("san",0.06,0.24,yc-0.24,yc+0.24,0.42,1.0); });
+      BX("counter",2.0,3.6,v0,v1,0,0.85);
+      [[2.25,2.75],[2.85,3.35]].forEach(([p,q]) => BX("san",p,q,v0+0.08,v1-0.08,0.85,0.97));
+      BX("mirror",2.0,3.6,mY-0.02,mY+0.02,1.1,2.0);
+    });
+    // dog-leg stair, 24 risers per storey: flight up beside the door, half landing at line 3, flight back
+    for (let i=1;i<=11;i++){
+      BX("tread",2.05,3.88,yL+(i-1)*gz,yL+i*gz,Math.max(-0.1,i*rz-0.4),i*rz);
+      BX("tread",0.12,1.95,yL+(11-i)*gz,yL+(12-i)*gz,(12+i)*rz-0.4,(12+i)*rz);
+    }
+    BX("tread",0.12,3.88,yL+11*gz,14.94,12*rz-0.25,12*rz);
+    BX("tread",0.12,3.88,10.56,yL,zTop-0.25,zTop);
+    BX("wall",1.95,2.05,yL,yL+11*gz,-0.1,zTop);
   });
   // lift core (C–D, lines 2a–2b), two lift doors either side of C′
-  wall(18,27,8-t/2,8+t/2); wall(18-t/2,18+t/2,8,10.5); wall(27-t/2,27+t/2,8,10.5);
+  // scenic lift shafts: glass on three sides so the cars can be seen
+  const HS = H + 0.55;
+  B("glassP",18,27,7.98,8.02,0,HS); B("glassP",17.98,18.02,8,10.5,0,HS); B("glassP",26.98,27.02,8,10.5,0,HS); B("glassP",22.48,22.52,8,10.5,0,HS);
+  [18,22.5,27].forEach(x => B("frame",x-0.05,x+0.05,7.95,8.05,0,HS));
   [[18,19.7],[20.8,24.2],[25.3,27]].forEach(([a,b]) => wall(a,b,10.5-t/2,10.5+t/2));
   [[19.7,20.8],[24.2,25.3]].forEach(([a,b]) => { B("lift",a,b,10.5-t/2,10.5+t/2+0.03,0,2.2); B("wall",a,b,10.5-t/2,10.5+t/2,2.2,H); });
   // open-plan desking, clusters of four in the 6 m bays
@@ -613,6 +672,7 @@ function updatePanel(){
 }
 function renderPlan(){ planEl.innerHTML = planSVG(state.sel === "all" ? "3-7" : state.sel); }
 function setView(v){
+  if (v === "plan" && window.__exitWalk) window.__exitWalk();
   state.view = v;
   if (v === "plan" && state.sel === "all"){ state.sel = "3-7"; state.sub = null; applySelection(true); }
   document.getElementById("tab3d").setAttribute("aria-pressed", v==="3d");
@@ -914,13 +974,15 @@ function buildFinishes(style){
 const IMAT = {
   wall:[0xE4E1DA,.9], glassP:[0xA9C7D1,.2,0,.22], frame:[0x2E3438,.5,.4], desk:[0xC9A77C,.7], leg:[0xE6E6E3,.6],
   screen:[0x6F8A8A,.95], chair:[0x2B3036,.8], table:[0x8A6A4A,.6], counter:[0xF0EEEA,.5], sofa:[0x4E6A7B,.95],
-  plant:[0x4F7A45,.9], pot:[0x3A3A38,.8], lift:[0x9AA2A6,.3,.8], carpet:[0x5E6870,1], stone:[0xD8D4CC,.6]
+  plant:[0x4F7A45,.9], pot:[0x3A3A38,.8], lift:[0x9AA2A6,.3,.8], carpet:[0x5E6870,1], stone:[0xD8D4CC,.6],
+  tread:[0xB9B5AD,.85], door:[0x8C6E52,.6], wcpart:[0x7F9AA6,.6], wcdoor:[0x5F7884,.6], san:[0xF4F4F2,.3], mirror:[0xC8D4DA,.1,.9]
 };
 const intMats = {};
 for (const k in IMAT){ const [c,r,m,op] = IMAT[k];
   intMats[k] = new THREE.MeshStandardMaterial({color:c, roughness:r, metalness:m||0, transparent:!!op, opacity:op||1, depthWrite:!op, side:op?THREE.DoubleSide:THREE.FrontSide}); }
 const intGroup = new THREE.Group(); intGroup.visible = false; scene.add(intGroup);
 let intBuilt = false;
+const stairMeshes = [];
 const _mI = new THREE.Matrix4(), _qI = new THREE.Quaternion(), _sI = new THREE.Vector3();
 function buildInteriors(){
   for (let n=0;n<=7;n++){
@@ -932,12 +994,44 @@ function buildInteriors(){
       arr.forEach((b,i) => { _sI.set(b.x1-b.x0, b.z1-b.z0, b.y1-b.y0); im.setMatrixAt(i, _mI.compose(V((b.x0+b.x1)/2,(b.y0+b.y1)/2,(b.z0+b.z1)/2), _qI, _sI)); });
       im.instanceMatrix.needsUpdate = true; im.frustumCulled = false;
       if (intMats[k].transparent) im.renderOrder = 4;
+      if (k === "tread") stairMeshes.push(im);
       g.add(im);
     }
     intGroup.add(g);
   }
   intBuilt = true;
 }
+
+/* ---------- Lift cars (animated) ---------- */
+const liftGroup = new THREE.Group(); liftGroup.visible = false; scene.add(liftGroup);
+const liftCars = [], liftFloors = [];
+const carMat = new THREE.MeshStandardMaterial({color:0x8E979C, metalness:.7, roughness:.35, envMap});
+const carLight = new THREE.MeshBasicMaterial({color:0xFFF1D6});
+const rndLift = seeded(11);
+[20.25, 24.75].forEach((xc, i) => {
+  const g = new THREE.Group();
+  const add = (mat,x0,x1,y0,y1,z0,z1) => { const m = new THREE.Mesh(UNIT, mat); m.scale.set(x1-x0, z1-z0, y1-y0); m.position.copy(V((x0+x1)/2,(y0+y1)/2,(z0+z1)/2)); g.add(m); return m; };
+  const a = xc-0.8, b = xc+0.8, y0 = 9.0, y1 = 10.4;
+  liftFloors.push(add(carMat,a,b,y0,y1,-0.12,0));
+  add(carMat,a,b,y0,y1,2.4,2.55); add(carMat,a,b,y0,y0+0.05,0,2.4); add(carMat,a,a+0.05,y0,y1,0,2.4); add(carMat,b-0.05,b,y0,y1,0,2.4);
+  add(carLight,a+0.3,b-0.3,y0+0.3,y1-0.3,2.37,2.4);
+  liftGroup.add(g);
+  const start = i === 0 ? 0 : 5;
+  liftCars.push({g, z:zf(start), target:start, wait:1 + i*2.5});
+});
+function updateLifts(dt){
+  if (!liftGroup.visible) return;
+  liftCars.forEach(c => {
+    if (c.wait > 0){ c.wait -= dt; return; }
+    const tz = zf(c.target), d = tz - c.z;
+    if (Math.abs(d) < 0.005){
+      c.z = tz; c.wait = 3 + rndLift()*4;
+      let nt; do { nt = Math.floor(rndLift()*9); } while (nt === c.target); c.target = nt;
+    } else c.z += Math.sign(d) * Math.min(Math.abs(d), 1.6*dt);
+    c.g.position.y = c.z;
+  });
+}
+liftCars.forEach(c => c.g.position.y = c.z);
 
 // labels (sprites)
 labelGroup = new THREE.Group(); scene.add(labelGroup);
@@ -1039,6 +1133,7 @@ applySelection = function(fly){
   if (state.interior && !intBuilt) buildInteriors();
   intGroup.visible = state.interior;
   intGroup.children.forEach(g => g.visible = !(al && state.fade) || al.includes(g.userData.tag));
+  liftGroup.visible = state.interior && !(al && state.fade);
   levelTags.forEach(t => { const on = !!(al && al.includes(t.n)); t.a.visible = !on; t.b.visible = on; });
   if (fly){
     if (!al){ const c = camPreset("iso"); flyTo(c.pos, c.target); }
@@ -1054,6 +1149,7 @@ applySelection = function(fly){
 const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
 let hovered = null, pickQueued = false, lastEvt = null;
 function pick(e){
+  if (walk.on) return walkClick(e);
   const r = renderer.domElement.getBoundingClientRect();
   ptr.x = ((e.clientX - r.left)/r.width)*2 - 1; ptr.y = -((e.clientY - r.top)/r.height)*2 + 1;
   ray.setFromCamera(ptr, camera);
@@ -1064,7 +1160,7 @@ function pick(e){
   renderer.domElement.style.cursor = top ? "crosshair" : "grab";
 }
 renderer.domElement.addEventListener("pointermove", e => {
-  if (e.pointerType !== "mouse" || e.buttons) return;
+  if (walk.on || e.pointerType !== "mouse" || e.buttons) return;
   lastEvt = e; if (!pickQueued){ pickQueued = true; requestAnimationFrame(() => { pickQueued = false; pick(lastEvt); }); }
 });
 let downAt = null;
@@ -1189,7 +1285,7 @@ function aim(c){
   _m4.identity().extractRotation(c.matrixWorld);
   xrRay.ray.origin.setFromMatrixPosition(c.matrixWorld);
   xrRay.ray.direction.set(0,0,-1).applyMatrix4(_m4);
-  const hits = xrRay.intersectObjects(meshes.filter(m => m.userData.active).concat(floorTargets), false);
+  const hits = xrRay.intersectObjects(meshes.filter(m => m.userData.active).concat(floorTargets, extraSurfaces()), false);
   const h = hits[0];
   xr.target = null; marker.visible = false;
   if (!h){ setHover(null, null); c.userData.line.scale.z = 6; return; }
@@ -1226,6 +1322,7 @@ function xrUpdate(dt){
 }
 
 async function enterVR(){
+  if (walk.on) exitWalk();
   let s;
   try { s = await navigator.xr.requestSession("immersive-vr", {optionalFeatures:["local-floor","bounded-floor"]}); }
   catch (err){ vrLabel.textContent = "VR unavailable"; vrBtn.title = "The headset refused the VR session: " + err.message; return; }
@@ -1257,9 +1354,121 @@ if (navigator.xr && navigator.xr.isSessionSupported){
   navigator.xr.isSessionSupported("immersive-vr").then(ok => { if (ok){ vrBtn.disabled = false; vrBtn.title = "Walk through the frame at full scale on a VR headset"; } else noVR(); }).catch(noVR);
 } else noVR();
 
+
+/* ---------- Walkthrough: first person at eye level, no headset needed ---------- */
+const walk = { on:false, yaw:0, pitch:0, feet:0, pos:new THREE.Vector3(), keys:{}, saved:null, drag:null, pickT:0, lvl:-1 };
+const walkBtn = document.getElementById("walkBtn"), walkLabel = document.getElementById("walkLabel");
+const walkHud = document.getElementById("walkHud"), walkLvl = document.getElementById("walkLvl"), walkPad = document.getElementById("walkPad"), xhair = document.getElementById("xhair");
+const EYE = 1.6;
+const walkGround = new THREE.Mesh(new THREE.PlaneGeometry(400,400), new THREE.MeshBasicMaterial({visible:false}));
+walkGround.rotation.x = -Math.PI/2; scene.add(walkGround);
+const downRay = new THREE.Raycaster(); downRay.far = 60;
+const _down = new THREE.Vector3(0,-1,0), _o = new THREE.Vector3(), _fw = new THREE.Vector3(), _rt = new THREE.Vector3(), _mv = new THREE.Vector3();
+function extraSurfaces(){
+  const out = [];
+  if (intGroup.visible){ stairMeshes.forEach(m => { if (m.parent.visible) out.push(m); }); }
+  if (liftGroup.visible) liftFloors.forEach(m => out.push(m));
+  return out;
+}
+function walkSurfaces(){ return slabs.concat([walkGround], extraSurfaces()); }
+function nearestLevel(y){ let best = 0, bd = Math.abs(y); for (let n=1;n<=NLEV;n++){ const d = Math.abs(y - zf(n)); if (d < bd){ bd = d; best = n; } } return best; }
+function enterWalk(){
+  if (walk.on) return;
+  if (state.view !== "3d") setView("3d");
+  walk.saved = { pos:camera.position.clone(), quat:camera.quaternion.clone(), target:controls.target.clone() };
+  state.sel = "all"; state.sub = null; applySelection(false); updatePanel();
+  controls.enabled = false; anim.on = false;
+  camera.fov = 62; camera.near = 0.05; camera.rotation.order = "YXZ"; camera.updateProjectionMatrix();
+  const p = V(22.5, -7, 0); walk.pos.set(p.x, 0, p.z); walk.feet = 0; walk.yaw = 0; walk.pitch = -0.04; walk.lvl = -1; walk.keys = {};
+  walk.on = true; document.body.classList.add("walking");
+  walkHud.hidden = false; walkPad.hidden = false; xhair.hidden = false;
+  walkLabel.textContent = "Exit walk"; walkBtn.setAttribute("aria-pressed", "true");
+  renderer.domElement.style.cursor = "grab";
+}
+function exitWalk(){
+  if (!walk.on) return;
+  walk.on = false; walk.keys = {}; walk.drag = null;
+  camera.rotation.order = "XYZ"; camera.fov = 34; camera.near = 0.5; camera.updateProjectionMatrix();
+  camera.position.copy(walk.saved.pos); camera.quaternion.copy(walk.saved.quat); controls.target.copy(walk.saved.target); controls.enabled = true;
+  document.body.classList.remove("walking");
+  walkHud.hidden = true; walkPad.hidden = true; xhair.hidden = true;
+  walkLabel.textContent = "Walk"; walkBtn.setAttribute("aria-pressed", "false");
+}
+window.__exitWalk = exitWalk;
+walkBtn.onclick = () => walk.on ? exitWalk() : enterWalk();
+function walkLevel(d){
+  const n = Math.max(0, Math.min(NLEV, nearestLevel(walk.feet) + d));
+  walk.feet = zf(n);
+}
+const K = c => !!walk.keys[c];
+function walkUpdate(dt){
+  walk.yaw += ((K("ArrowLeft")?1:0) - (K("ArrowRight")?1:0)) * 1.7 * dt;
+  const f = (K("KeyW")||K("ArrowUp")?1:0) - (K("KeyS")||K("ArrowDown")?1:0);
+  const s = (K("KeyD")?1:0) - (K("KeyA")?1:0);
+  if (f || s){
+    _fw.set(-Math.sin(walk.yaw), 0, -Math.cos(walk.yaw)); _rt.set(Math.cos(walk.yaw), 0, -Math.sin(walk.yaw));
+    _mv.copy(_fw).multiplyScalar(f).addScaledVector(_rt, s).normalize();
+    walk.pos.addScaledVector(_mv, (K("ShiftLeft")||K("ShiftRight") ? 6 : 2.4) * dt);
+  }
+  // follow the floor: step up stairs, fall through voids
+  _o.set(walk.pos.x, walk.feet + 0.55, walk.pos.z);
+  downRay.set(_o, _down);
+  const h = downRay.intersectObjects(walkSurfaces(), false)[0];
+  const g = h ? h.point.y : 0;
+  if (g > walk.feet) walk.feet += (g - walk.feet) * Math.min(1, dt*16);
+  else walk.feet = Math.max(g, walk.feet - 9*dt);
+  camera.position.set(walk.pos.x, walk.feet + EYE, walk.pos.z);
+  camera.rotation.set(walk.pitch, walk.yaw, 0);
+  const lv = nearestLevel(walk.feet);
+  if (lv !== walk.lvl){ walk.lvl = lv; walkLvl.textContent = lv === 0 ? "Ground  ±0.00 m" : "Level " + lv + "  +" + f2(elev(lv)) + " m"; }
+  walk.pickT -= dt;
+  if (walk.pickT <= 0){
+    walk.pickT = 0.2;
+    ray.setFromCamera({x:0, y:0}, camera); ray.far = 15;
+    const hit = ray.intersectObjects(meshes.filter(m => m.userData.active), false)[0];
+    ray.far = Infinity;
+    if (hit) showMember(hit.object.userData.m);
+  }
+}
+function walkClick(e){
+  const r = renderer.domElement.getBoundingClientRect();
+  ptr.x = ((e.clientX - r.left)/r.width)*2 - 1; ptr.y = -((e.clientY - r.top)/r.height)*2 + 1;
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(meshes.filter(m => m.userData.active).concat(walkSurfaces()), false)[0];
+  if (!hit) return;
+  if (hit.object.userData.m){ showMember(hit.object.userData.m); return; }
+  if (hit.distance < 40){ walk.pos.set(hit.point.x, 0, hit.point.z); walk.feet = hit.point.y; }
+}
+renderer.domElement.addEventListener("pointerdown", e => { if (walk.on){ walk.drag = {x:e.clientX, y:e.clientY}; renderer.domElement.style.cursor = "grabbing"; } });
+renderer.domElement.addEventListener("pointermove", e => {
+  if (!walk.on || !walk.drag) return;
+  walk.yaw -= (e.clientX - walk.drag.x) * 0.0042;
+  walk.pitch = Math.max(-1.35, Math.min(1.35, walk.pitch - (e.clientY - walk.drag.y) * 0.0042));
+  walk.drag.x = e.clientX; walk.drag.y = e.clientY;
+});
+["pointerup","pointercancel","pointerleave"].forEach(ev => renderer.domElement.addEventListener(ev, () => { if (walk.on){ walk.drag = null; renderer.domElement.style.cursor = "grab"; } }));
+const WALK_KEYS = ["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","ShiftLeft","ShiftRight"];
+window.addEventListener("keydown", e => {
+  if (!walk.on) return;
+  if (e.code === "Escape"){ exitWalk(); return; }
+  if (e.code === "KeyE" || e.code === "PageUp"){ walkLevel(1); e.preventDefault(); return; }
+  if (e.code === "KeyQ" || e.code === "PageDown"){ walkLevel(-1); e.preventDefault(); return; }
+  if (WALK_KEYS.includes(e.code)){ walk.keys[e.code] = true; e.preventDefault(); }
+});
+window.addEventListener("keyup", e => { walk.keys[e.code] = false; });
+window.addEventListener("blur", () => { walk.keys = {}; });
+walkPad.querySelectorAll("button[data-k]").forEach(b => {
+  const k = b.dataset.k;
+  b.addEventListener("pointerdown", e => { e.preventDefault(); walk.keys[k] = true; try { b.setPointerCapture(e.pointerId); } catch(_){} });
+  ["pointerup","pointercancel","lostpointercapture"].forEach(ev => b.addEventListener(ev, () => { walk.keys[k] = false; }));
+});
+walkPad.querySelectorAll("button[data-lv]").forEach(b => b.addEventListener("click", () => walkLevel(+b.dataset.lv)));
+
 let lastT = performance.now();
 function loop(t){
   const dt = Math.min(0.05, (t - lastT)/1000); lastT = t;
+  updateLifts(dt);
+  if (walk.on){ walkUpdate(dt); if (!document.getElementById("gl").hidden) renderer.render(scene, camera); return; }
   if (renderer.xr.isPresenting){ xrUpdate(dt); renderer.render(scene, camera); return; }
   if (anim.on){
     anim.t = Math.min(1, anim.t + dt/0.8);
