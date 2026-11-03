@@ -10,7 +10,7 @@ A read-only 3D and WebXR walkthrough of the eight-storey composite steel frame b
 - Hover or tap a member for its ID, grid position, level and length.
 - Optional exterior finishes: curtain wall or ribbon glazing, rainscreen cladding over the stair cores, roof plant screen, entrance canopy.
 - Optional interior fit-out: dog-leg stairs, two animated scenic lifts and toilets in the cores, partitions, open-plan desking, glazed meeting rooms, tea points and a reception lobby.
-- **Walk:** first-person walkthrough at eye level with no headset. W A S D or arrow keys to move, drag to look, Shift to run, E / Q to change level, click a floor to jump there. On touch screens use the on-screen pad. Stairs can be climbed and the lifts ridden.
+- **Walk:** first-person walkthrough at eye level with no headset. W A S D or arrow keys to move, drag to look, Shift to run, E / Q to change level, click a floor to jump there. On touch screens use the on-screen pad. Walls, furniture, columns and the facade block your way (switchable). The entrance slides open and stair and toilet doors swing open as you approach; stairs have fire doors with exit signs. Wait by a lift to call it, step in, and press E or Q to choose a floor.
 - **VR:** open the page in the Meta Quest Browser and press *Enter VR*.
 
 ## VR controls (Meta Quest)
