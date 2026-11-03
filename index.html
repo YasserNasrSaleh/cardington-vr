@@ -15,6 +15,7 @@
   --c-col:#3F5566; --c-pri:#25313A; --c-sec:#8697A3; --c-core:#2A7A7E; --c-vb:#B23A26; --c-pb:#8455AE;
   --slab:#9AA6AB; --ground:#D3D9DA; --flag:#A9AFB2;
   --paving:#CDD1CE; --glass:#5E93A8; --spandrel:#3A474F; --mullion:#AEB6BA; --clad:#B3AB9E;
+  --plant:#5F8F55; --i-wall:#E4E1DA; --i-desk:#C9A77C; --i-screen:#6F8A8A; --i-chair:#2B3036; --i-sofa:#4E6A7B; --i-carpet:#5E6870;
   --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
@@ -84,6 +85,10 @@ main{display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:0}
 .sw.louvre{background:repeating-linear-gradient(180deg,var(--spandrel) 0 2px,var(--mullion) 2px 4px)}
 .pl-cw{stroke:var(--glass);stroke-width:3;fill:none}
 .pl-mul{stroke:var(--muted);stroke-width:1.1}
+.pl-iw{fill:var(--muted);opacity:.85}
+.pl-ig{fill:var(--glass)}
+.pl-if{fill:var(--panel);fill-opacity:.55;stroke:var(--muted);stroke-width:.6}
+.pl-ip{fill:var(--plant)}
 .pl-clad{fill:var(--clad);stroke:var(--muted);stroke-width:.6}
 
 .levels{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -191,6 +196,7 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
           <button id="tabplan" aria-pressed="false">Plan</button>
         </div>
         <button class="pill" id="finBtn" aria-pressed="false" title="Show the exterior envelope: curtain walls, cladding and roof"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.5" y="1.5" width="11" height="11"/><path d="M5.2 1.5v11M8.8 1.5v11M1.5 5.2h11M1.5 8.8h11"/></svg>Finishes</button>
+        <button class="pill" id="intBtn" aria-pressed="false" title="Show the interior fit-out: partitions, desks and meeting rooms"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 6.5h8.5M2.2 6.5V12M8.3 6.5V12M10.5 2v10M10.5 8.5h2.5V12"/></svg>Interiors</button>
       </div>
       <div class="bar top-r" id="cams">
         <button class="pill vr" id="vrBtn" aria-pressed="false" disabled title="Checking for a VR headset…"><svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1.5 2.5h13v6.2a1.3 1.3 0 0 1-1.3 1.3h-3l-1.6-2.2a.8.8 0 0 0-1.2 0L6.8 10h-3a1.3 1.3 0 0 1-1.3-1.3z"/><circle cx="4.8" cy="5.8" r="1.4"/><circle cx="11.2" cy="5.8" r="1.4"/></svg><span id="vrLabel">Enter VR</span></button>
@@ -253,6 +259,23 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
         </div>
       </div>
 
+      <div class="sec" id="intSec" hidden>
+        <div class="eyebrow">Interior fit-out</div>
+        <div class="legend fin">
+          <span class="sw mat" style="background:var(--i-wall)"></span><span>Plasterboard partitions around the stair, toilet and lift cores</span>
+          <span class="sw mat" style="background:var(--glass)"></span><span>Glazed meeting-room fronts and Level 1 balustrade</span>
+          <span class="sw mat" style="background:var(--i-desk)"></span><span>Desk clusters of four with fabric screens</span>
+          <span class="sw mat" style="background:var(--i-chair)"></span><span>Task and meeting chairs</span>
+          <span class="sw mat" style="background:var(--i-sofa)"></span><span>Lobby and breakout seating</span>
+          <span class="sw mat" style="background:var(--i-carpet)"></span><span>Carpet tiles; stone floor in the reception lobby</span>
+          <span class="sw mat" style="background:var(--plant)"></span><span>Planters</span>
+        </div>
+        <div class="notes">
+          <p>A typical Category B office fit-out. Open-plan desking for up to 80 people per floor fills the 6.0 m bays along lines 1 to 2 and 3 to 4. Each side of the lift lobby has three glazed meeting rooms and a tea point. The ground floor has a reception lobby under the Level 1 void. The roof is not fitted out.</p>
+          <p>With a level selected, only that floor is furnished.</p>
+        </div>
+      </div>
+
       <div class="sec">
         <div class="eyebrow">Members</div>
         <div class="legend" id="legend"></div>
@@ -264,7 +287,7 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
           <p>Grid 45.0 × 21.0 m: five 9.0 m bays (A–F) and three bays of 6.0, 9.0 and 6.0 m (1–4), with core gridlines A′, C′, E′, 2a and 2b.</p>
           <p>Framing is taken from the four floor plans. Storey heights are set to 4.34 m at ground and 4.14 m above. X-bracing runs full height in the long direction on line 3 (A–A′, E′–F) and line 2b (C–D), and in the short direction on axes A and F between lines 2b and 3, and on axes C and D between lines 2 and 2b. Deck openings are indicative.</p>
           <p>This sample opens read-only. Members cannot be moved, edited or deleted.</p>
-          <p><strong>Virtual reality.</strong> Open this page in the Meta Quest Browser and press Enter VR. You start on the paving south of line 1 at full scale. The left stick moves you (hold grip to go faster) and the right stick turns. Point the right controller at a floor and pull the trigger to teleport, or at a member to identify it. A and B go up and down a level, X shows or hides the finishes, and Y returns you to the start.</p>
+          <p><strong>Virtual reality.</strong> Open this page in the Meta Quest Browser and press Enter VR. You start on the paving south of line 1 at full scale. The left stick moves you (hold grip to go faster) and the right stick turns. Point the right controller at a floor and pull the trigger to teleport, or at a member to identify it. A and B go up and down a level, X shows or hides the finishes, clicking the left stick shows or hides the interiors, and Y returns you to the start.</p>
         </div>
       </div>
     </aside>
@@ -388,7 +411,70 @@ const LEVELS = [
   {key:"3-7", label:"L3–7", title:"Levels 3–7", elev:"+"+f2(elev(3))+" to +"+f2(elev(7))+" m", desc:"Typical office floor, repeated five times. Secondary beams at 3.0 m centres span the 9.0 m bays; the two stair cores and central lift core are framed on gridlines A′, E′, 2a and 2b."},
   {key:"8", label:"L8", title:"Level 8 (roof)", elev:"+"+f2(elev(8))+" m", desc:"Roof level. Secondary beams are at 1.5 m centres in the 6.0 m bays and run across the full width between gridlines 2 and 3."}
 ];
-const state = { sel:"all", sub:null, view:"3d", fade:true, deck:true, grid:true, finish:false, finStyle:"curtain" };
+const state = { sel:"all", sub:null, view:"3d", fade:true, deck:true, grid:true, finish:false, finStyle:"curtain", interior:false };
+
+/* ---------- Interior fit-out layout (plan m, heights above finished floor) ---------- */
+function interiorLayout(n){            // n = 0 ground ... 7: items standing on that floor
+  const z = n === 0 ? 0 : elev(n) + 0.13, H = elev(n+1) - 0.55 - z, t = 0.12;
+  const it = [];
+  const B = (mat,x0,x1,y0,y1,h0,h1) => it.push({mat,x0,x1,y0,y1,z0:z+h0,z1:z+h1});
+  const wall = (x0,x1,y0,y1) => B("wall",x0,x1,y0,y1,0,H);
+  const chair = (x,y,dir) => { B("chair",x-0.25,x+0.25,y-0.25,y+0.25,0.42,0.5); const by = y+dir*0.23; B("chair",x-0.25,x+0.25,by-0.04,by+0.04,0.5,0.95); B("frame",x-0.04,x+0.04,y-0.04,y+0.04,0,0.42); };
+  const plant = (x,y) => { B("pot",x-0.25,x+0.25,y-0.25,y+0.25,0,0.55); B("plant",x-0.35,x+0.35,y-0.35,y+0.35,0.55,1.45); };
+  const sofa = (x0,x1,y0,y1,backY) => { B("sofa",x0,x1,y0,y1,0,0.42); B("sofa",x0,x1,backY-0.09,backY+0.09,0.42,0.82); };
+  // floor finish
+  const R = n === 0 ? [[0,18,0,21],[27,45,0,21],[18,27,8,21]]
+          : n === 1 ? [[0,18,0,10.5],[27,45,0,10.5],[0,45,15,21],[4,41,10.5,15]]
+          : [[0,45,0,8],[0,45,15,21],[0,18,8,10.5],[27,45,8,10.5],[4,41,10.5,15]];
+  R.forEach(r => B("carpet",r[0],r[1],r[2],r[3],0,0.015));
+  if (n === 0) B("stone",18,27,0,8,0,0.02);
+  // stair and toilet cores (A–A′ and E′–F, lines 2–3)
+  [[0,4,4],[41,45,41]].forEach(([a,b,inner]) => {
+    wall(inner-t/2,inner+t/2,6,15); wall(a,b,6-t/2,6+t/2); wall(a,b,15-t/2,15+t/2); wall(a,b,10.5-t/2,10.5+t/2);
+  });
+  // lift core (C–D, lines 2a–2b), two lift doors either side of C′
+  wall(18,27,8-t/2,8+t/2); wall(18-t/2,18+t/2,8,10.5); wall(27-t/2,27+t/2,8,10.5);
+  [[18,19.7],[20.8,24.2],[25.3,27]].forEach(([a,b]) => wall(a,b,10.5-t/2,10.5+t/2));
+  [[19.7,20.8],[24.2,25.3]].forEach(([a,b]) => { B("lift",a,b,10.5-t/2,10.5+t/2+0.03,0,2.2); B("wall",a,b,10.5-t/2,10.5+t/2,2.2,H); });
+  // open-plan desking, clusters of four in the 6 m bays
+  const xs = [2.5,6.5,11.5,15.5,20.5,24.5,29.5,33.5,38.5,42.5];
+  [3,18].forEach(yc => xs.forEach(xc => {
+    if (yc === 3 && n <= 1 && xc > 18 && xc < 27) return;           // ground lobby / Level 1 void
+    B("desk",xc-1.6,xc+1.6,yc-0.8,yc+0.8,0.72,0.75);
+    [-1.56,0,1.56].forEach(dx => B("leg",xc+dx-0.02,xc+dx+0.02,yc-0.75,yc+0.75,0,0.72));
+    B("screen",xc-1.6,xc+1.6,yc-0.015,yc+0.015,0.75,1.2);
+    [-0.8,0.8].forEach(dx => [-1,1].forEach(dy => chair(xc+dx, yc+dy*1.15, dy)));
+  }));
+  [[13.5,5.3],[31.5,5.3],[13.5,15.7],[31.5,15.7]].forEach(([x,y]) => { if (!(n <= 1 && y < 6 && x > 18 && x < 27)) plant(x,y); });
+  // meeting rooms (lines 2b–3 side of the corridor) and tea points, both sides of the lift core
+  [[4,18],[27,41]].forEach(([a,b], side) => {
+    const w = (b-a)/3;
+    for (let k=0;k<3;k++){
+      const x0 = a+k*w, x1 = x0+w, xm = (x0+x1)/2;
+      B("glassP",x0+0.06,x1-0.06,11.98,12.02,0,H);
+      B("frame",x0,x1,11.97,12.03,H-0.06,H); B("frame",x0,x1,11.97,12.03,0,0.06);
+      B("table",xm-1.2,xm+1.2,13.0,14.0,0.72,0.76); B("frame",xm-0.6,xm+0.6,13.4,13.6,0,0.72);
+      [-0.8,0,0.8].forEach(dx => { chair(xm+dx,12.6,-1); chair(xm+dx,14.4,1); });
+    }
+    for (let k=0;k<=3;k++) wall(a+k*w-t/2,a+k*w+t/2,12,15);
+    wall(a,b,15-t/2,15+t/2);
+    const c0 = side === 0 ? a+6 : b-11;
+    B("counter",c0,c0+5,6.1,6.75,0,0.92); B("counter",c0,c0+5,6.06,6.4,1.5,2.2);
+    (side === 0 ? [6.5,16.5] : [28.5,38.5]).forEach(x => { B("table",x-0.4,x+0.4,7.4,8.2,0.72,0.75); B("frame",x-0.04,x+0.04,7.76,7.84,0,0.72); chair(x,7.15,-1); chair(x,8.45,1); });
+  });
+  // lift lobby
+  sofa(21,24,14.15,14.75,14.66); plant(19,14.4); plant(26,14.4);
+  if (n === 1){   // glass balustrade along the entrance void
+    [18,27].forEach(x => { B("glassP",x-0.02,x+0.02,0,8,0,1.06); B("frame",x-0.03,x+0.03,0,8,1.06,1.12); });
+  }
+  if (n === 0){   // reception lobby
+    B("counter",20,25,6.0,6.8,0,1.1); B("table",19.9,25.1,5.95,6.85,1.1,1.14);
+    sofa(19.4,22,2.6,3.4,3.31); sofa(23,25.6,2.6,3.4,3.31);
+    B("table",21.2,23.8,1.4,2.1,0,0.4);
+    plant(18.8,1.0); plant(26.2,1.0);
+  }
+  return it;
+}
 const FIN = { o:0.45 };   // facade line offset outside the grid, m
 const FIN_DESC = {
   curtain:"Stick-system curtain wall: storey-height vision glass on a 1.5 m mullion grid, with a slim spandrel at each slab edge.",
@@ -444,6 +530,14 @@ function planSVG(key){
     const ux = Math.sign(b.x2-b.x1), uy = Math.sign(b.y2-b.y1);
     s += `<line class="pl-brace" x1="${sx(b.x1)+5*ux}" y1="${sy(b.y1)-5*uy}" x2="${sx(b.x2)-5*ux}" y2="${sy(b.y2)+5*uy}"/>`;
   });
+  // interior fit-out
+  if (state.interior && n <= 7){
+    const PC = {wall:"pl-iw", lift:"pl-iw", glassP:"pl-ig", plant:"pl-ip"};
+    interiorLayout(n).forEach(b => {
+      if (["carpet","stone","leg","frame","pot"].includes(b.mat)) return;
+      s += `<rect class="${PC[b.mat] || "pl-if"}" x="${sx(b.x0)}" y="${sy(b.y1)}" width="${(b.x1-b.x0)*PS}" height="${(b.y1-b.y0)*PS}"/>`;
+    });
+  }
   // beams
   const lvMembers = members.filter(m => m.level === n && m.k !== "col" && m.k !== "vb");
   lvMembers.forEach(m => {
@@ -553,6 +647,14 @@ finBtn.onclick = () => {
   state.finish = !state.finish;
   finBtn.setAttribute("aria-pressed", state.finish);
   finSec.hidden = !state.finish;
+  applySelection(false);
+  if (state.view === "plan") renderPlan();
+};
+const intBtn = document.getElementById("intBtn"), intSec = document.getElementById("intSec");
+intBtn.onclick = () => {
+  state.interior = !state.interior;
+  intBtn.setAttribute("aria-pressed", state.interior);
+  intSec.hidden = !state.interior;
   applySelection(false);
   if (state.view === "plan") renderPlan();
 };
@@ -800,12 +902,41 @@ function buildFinishes(style){
     const b = finBins[tag];
     if (b.bars.length){
       const im = new THREE.InstancedMesh(UNIT, FM.mullion, b.bars.length);
-      b.bars.forEach((m,i) => im.setMatrixAt(i, m)); im.instanceMatrix.needsUpdate = true;
+      b.bars.forEach((m,i) => im.setMatrixAt(i, m)); im.instanceMatrix.needsUpdate = true; im.frustumCulled = false;
       b.group.add(im);
     }
     b.group.userData.tag = +tag; finGroup.add(b.group);
   }
   finBuilt = style;
+}
+
+/* ---------- Interior fit-out (3D) ---------- */
+const IMAT = {
+  wall:[0xE4E1DA,.9], glassP:[0xA9C7D1,.2,0,.22], frame:[0x2E3438,.5,.4], desk:[0xC9A77C,.7], leg:[0xE6E6E3,.6],
+  screen:[0x6F8A8A,.95], chair:[0x2B3036,.8], table:[0x8A6A4A,.6], counter:[0xF0EEEA,.5], sofa:[0x4E6A7B,.95],
+  plant:[0x4F7A45,.9], pot:[0x3A3A38,.8], lift:[0x9AA2A6,.3,.8], carpet:[0x5E6870,1], stone:[0xD8D4CC,.6]
+};
+const intMats = {};
+for (const k in IMAT){ const [c,r,m,op] = IMAT[k];
+  intMats[k] = new THREE.MeshStandardMaterial({color:c, roughness:r, metalness:m||0, transparent:!!op, opacity:op||1, depthWrite:!op, side:op?THREE.DoubleSide:THREE.FrontSide}); }
+const intGroup = new THREE.Group(); intGroup.visible = false; scene.add(intGroup);
+let intBuilt = false;
+const _mI = new THREE.Matrix4(), _qI = new THREE.Quaternion(), _sI = new THREE.Vector3();
+function buildInteriors(){
+  for (let n=0;n<=7;n++){
+    const g = new THREE.Group(); g.userData.tag = n;
+    const byMat = {};
+    interiorLayout(n).forEach(b => (byMat[b.mat] = byMat[b.mat] || []).push(b));
+    for (const k in byMat){
+      const arr = byMat[k], im = new THREE.InstancedMesh(UNIT, intMats[k], arr.length);
+      arr.forEach((b,i) => { _sI.set(b.x1-b.x0, b.z1-b.z0, b.y1-b.y0); im.setMatrixAt(i, _mI.compose(V((b.x0+b.x1)/2,(b.y0+b.y1)/2,(b.z0+b.z1)/2), _qI, _sI)); });
+      im.instanceMatrix.needsUpdate = true; im.frustumCulled = false;
+      if (intMats[k].transparent) im.renderOrder = 4;
+      g.add(im);
+    }
+    intGroup.add(g);
+  }
+  intBuilt = true;
 }
 
 // labels (sprites)
@@ -905,6 +1036,9 @@ applySelection = function(fly){
   finGroup.visible = state.finish;
   const cut = (al && state.fade) ? Math.max(...al) : 99;
   finGroup.children.forEach(g => g.visible = g.userData.tag <= cut);
+  if (state.interior && !intBuilt) buildInteriors();
+  intGroup.visible = state.interior;
+  intGroup.children.forEach(g => g.visible = !(al && state.fade) || al.includes(g.userData.tag));
   levelTags.forEach(t => { const on = !!(al && al.includes(t.n)); t.a.visible = !on; t.b.visible = on; });
   if (fly){
     if (!al){ const c = camPreset("iso"); flyTo(c.pos, c.target); }
@@ -984,8 +1118,8 @@ function drawPanel(p, title, rows){
   });
   p.tex.needsUpdate = true;
 }
-const helpPanel = makePanel(0.24, 0.2, 600, 500);
-drawPanel(helpPanel, "Controls", [["Left stick","Move"],["  + grip","Move faster"],["Right stick","Turn 30°"],["Trigger","Teleport to floor"],["A / B","Level up / down"],["X","Finishes on / off"],["Y","Back to start"]]);
+const helpPanel = makePanel(0.24, 0.22, 600, 550);
+drawPanel(helpPanel, "Controls", [["Left stick","Move"],["  + grip","Move faster"],["Right stick","Turn 30°"],["Trigger","Teleport to floor"],["A / B","Level up / down"],["X","Finishes on / off"],["Y","Back to start"],["L-stick click","Interiors on / off"]]);
 helpPanel.mesh.position.set(0, 0.07, -0.06); helpPanel.mesh.rotation.x = -0.95;
 const infoPanel = makePanel(0.26, 0.15, 650, 375);
 infoPanel.mesh.position.set(0, 0.07, -0.06); infoPanel.mesh.rotation.x = -0.95;
@@ -1086,6 +1220,7 @@ function xrUpdate(dt){
   pressed(R, 5, "B", () => setLevel(currentLevel() - 1));
   pressed(L, 4, "X", () => finBtn.click());
   pressed(L, 5, "Y", resetStart);
+  pressed(L, 3, "LS", () => intBtn.click());
   aim(R || L);
   refreshInfo();
 }
@@ -1140,7 +1275,7 @@ const start = camPreset("iso");
 camera.position.copy(start.pos); controls.target.copy(start.target);
 onResize(); applyTheme(); updatePanel();
 renderer.setAnimationLoop(loop);
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { buildLabels(); applySelection(false); drawPanel(helpPanel, "Controls", [["Left stick","Move"],["  + grip","Move faster"],["Right stick","Turn 30°"],["Trigger","Teleport to floor"],["A / B","Level up / down"],["X","Finishes on / off"],["Y","Back to start"]]); infoKey = ""; });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { buildLabels(); applySelection(false); drawPanel(helpPanel, "Controls", [["Left stick","Move"],["  + grip","Move faster"],["Right stick","Turn 30°"],["Trigger","Teleport to floor"],["A / B","Level up / down"],["X","Finishes on / off"],["Y","Back to start"],["L-stick click","Interiors on / off"]]); infoKey = ""; });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
 new MutationObserver(applyTheme).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
 })();
