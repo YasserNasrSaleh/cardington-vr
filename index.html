@@ -14,7 +14,7 @@
   --hi:#E39A0F; --hi-ink:#1B1406;
   --c-col:#3F5566; --c-pri:#25313A; --c-sec:#8697A3; --c-core:#2A7A7E; --c-vb:#B23A26; --c-pb:#8455AE;
   --slab:#9AA6AB; --ground:#D3D9DA; --flag:#A9AFB2;
-  --paving:#CDD1CE; --glass:#5E93A8; --spandrel:#3A474F; --mullion:#AEB6BA; --clad:#B3AB9E;
+  --paving:#CDD1CE; --glass:#5E93A8; --spandrel:#3A474F; --mullion:#AEB6BA; --clad:#B3AB9E; --alarm:#C8372D; --ok:#2F8A4F;
   --plant:#5F8F55; --i-wall:#E4E1DA; --i-desk:#C9A77C; --i-screen:#6F8A8A; --i-chair:#2B3036; --i-sofa:#4E6A7B; --i-carpet:#5E6870; --i-tread:#B9B5AD; --i-car:#8E979C; --i-wc:#7F9AA6;
   --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -24,12 +24,12 @@
   --bg:#101416; --panel:#171C1F; --view:#0C1012; --ink:#E4E9EA; --muted:#8C989E; --line:#2B3439; --line-soft:#222A2E;
   --hi:#F2B33A; --hi-ink:#1B1406;
   --c-col:#8BA4B6; --c-pri:#C7D1D7; --c-sec:#5F717D; --c-core:#4CB2B4; --c-vb:#E2654C; --c-pb:#B48BD6;
-  --slab:#56636A; --ground:#151B1E; --flag:#4A5257; --paving:#252C30; color-scheme:dark}}
+  --slab:#56636A; --ground:#151B1E; --flag:#4A5257; --paving:#252C30; --alarm:#E0574B; --ok:#4FB872; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#101416; --panel:#171C1F; --view:#0C1012; --ink:#E4E9EA; --muted:#8C989E; --line:#2B3439; --line-soft:#222A2E;
   --hi:#F2B33A; --hi-ink:#1B1406;
   --c-col:#8BA4B6; --c-pri:#C7D1D7; --c-sec:#5F717D; --c-core:#4CB2B4; --c-vb:#E2654C; --c-pb:#B48BD6;
-  --slab:#56636A; --ground:#151B1E; --flag:#4A5257; --paving:#252C30; color-scheme:dark}
+  --slab:#56636A; --ground:#151B1E; --flag:#4A5257; --paving:#252C30; --alarm:#E0574B; --ok:#4FB872; color-scheme:dark}
 
 html,body{height:100%;margin:0}
 [hidden]{display:none!important}
@@ -178,7 +178,24 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
   .seg button{padding:6px 9px}
   .bar.top-r .seg button{padding:5px 8px;font-size:12px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.pill.drill[aria-pressed="true"]{background:var(--alarm);border-color:var(--alarm);color:#fff}
+.bar.top-l{flex-wrap:wrap;max-width:calc(100% - 24px)}
+.drillhud{position:absolute;top:62px;left:50%;transform:translateX(-50%);z-index:3;width:min(400px,calc(100% - 24px));background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.dh-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.alarm{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;border:1px solid var(--line);color:var(--muted)}
+.alarm.on{background:var(--alarm);border-color:var(--alarm);color:#fff;animation:alarmPulse 1s steps(2,jump-none) infinite}
+.alarm.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+@keyframes alarmPulse{50%{opacity:.45}}
+.dh-time{font-family:var(--f-display);font-size:24px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.dh-bar{height:6px;border-radius:3px;background:var(--line-soft);overflow:hidden}
+.dh-bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .2s}
+.dh-row{display:flex;justify-content:space-between;gap:4px 12px;flex-wrap:wrap;font-size:12.5px;font-variant-numeric:tabular-nums}
+.dh-row span:last-child{color:var(--muted)}
+.dh-btns{display:flex;gap:6px;flex-wrap:wrap}
+.dh-btns button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:5px;padding:5px 10px;font-size:12.5px;cursor:pointer}
+@media (max-width:1180px){.bar.top-r{top:62px}.drillhud{top:112px}}
+@media (max-width:860px){.bar.top-r{top:108px}.drillhud{top:158px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.alarm.on{animation:none}}
 </style>
 
 </head>
@@ -208,6 +225,7 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
         </div>
         <button class="pill" id="finBtn" aria-pressed="false" title="Show the exterior envelope: curtain walls, cladding and roof"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.5" y="1.5" width="11" height="11"/><path d="M5.2 1.5v11M8.8 1.5v11M1.5 5.2h11M1.5 8.8h11"/></svg>Finishes</button>
         <button class="pill" id="intBtn" aria-pressed="false" title="Show the interior fit-out: partitions, desks and meeting rooms"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 6.5h8.5M2.2 6.5V12M8.3 6.5V12M10.5 2v10M10.5 8.5h2.5V12"/></svg>Interiors</button>
+        <button class="pill drill" id="drillBtn" aria-pressed="false" title="Fill the building with people and evacuate them by the stairs"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M7 1.5c.4 2-2.8 3.3-2.8 6.3a2.8 2.8 0 0 0 5.6 0c0-1.3-.6-2.1-1.2-2.8.1 1-.4 1.6-1 1.8.3-1.6-.2-3.8-.6-5.3z"/><path d="M3 12.5h8"/></svg><span id="drillLabel">Fire drill</span></button>
       </div>
       <div class="bar top-r" id="cams">
         <button class="pill vr" id="walkBtn" aria-pressed="false" title="Walk through the building at eye level"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="7.5" cy="2.3" r="1.3"/><path d="M7.2 4.6 6 8.4l2.6 1.4.6 3.2M6 8.4 4.4 13M6.9 5.2 4.3 6.8M7.6 5.6l2.4 1.6"/></svg><span id="walkLabel">Walk</span></button>
@@ -221,6 +239,12 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
       </div>
       <div class="hint" id="hint">Drag to orbit · right-drag to pan · scroll to zoom</div>
 
+      <div class="drillhud" id="drillHud" hidden>
+        <div class="dh-top"><span class="alarm" id="drillAlarm">Building occupied</span><span class="dh-time" id="drillTime">0:00</span></div>
+        <div class="dh-bar"><i id="drillBar"></i></div>
+        <div class="dh-row"><span id="drillCount"></span><span id="drillStairs"></span></div>
+        <div class="dh-btns"><button id="drillSpeed">Speed 1×</button><button id="drillSound" aria-pressed="true">Sound on</button><button id="drillStop">End drill</button></div>
+      </div>
       <div class="xhair" id="xhair" hidden></div>
       <div class="walkhud" id="walkHud" hidden>
         <b id="walkLvl">Ground  ±0.00 m</b>
@@ -319,6 +343,7 @@ aside{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;
           <p>Grid 45.0 × 21.0 m: five 9.0 m bays (A–F) and three bays of 6.0, 9.0 and 6.0 m (1–4), with core gridlines A′, C′, E′, 2a and 2b.</p>
           <p>Framing is taken from the four floor plans. Storey heights are set to 4.34 m at ground and 4.14 m above. X-bracing runs full height in the long direction on line 3 (A–A′, E′–F) and line 2b (C–D), and in the short direction on axes A and F between lines 2b and 3, and on axes C and D between lines 2 and 2b. Deck openings are indicative.</p>
           <p>This sample opens read-only. Members cannot be moved, edited or deleted.</p>
+          <p><strong>Fire drill.</strong> Fills every floor with office staff (about two-thirds of desks and some meeting seats occupied). When the alarm sounds, each person waits a few seconds, then walks to the nearer stair core and down to the ground. West-stair users leave by the main entrance and east-stair users by the rear exit on line 4, to assembly points south and north of the building. Lifts return to the ground floor and stop. People do not queue or slow each other down, so the time shown is a best case.</p>
           <p><strong>Virtual reality.</strong> Open this page in the Meta Quest Browser and press Enter VR. You start on the paving south of line 1 at full scale. The left stick moves you (hold grip to go faster) and the right stick turns. Point the right controller at a floor and pull the trigger to teleport, or at a member to identify it. A and B go up and down a level, X shows or hides the finishes, clicking the left stick shows or hides the interiors, and Y returns you to the start.</p>
         </div>
       </div>
@@ -493,10 +518,14 @@ function interiorLayout(n){            // n = 0 ground ... 7: items standing on 
   // lift core (C–D, lines 2a–2b), two lift doors either side of C′
   // scenic lift shafts: glass on three sides so the cars can be seen
   const HS = H + 0.55;
-  B("glassP",18,27,7.98,8.02,0,HS); B("glassP",17.98,18.02,8,10.5,0,HS); B("glassP",26.98,27.02,8,10.5,0,HS); B("glassP",22.48,22.52,8,10.5,0,HS);
-  [18,22.5,27].forEach(x => B("frame",x-0.05,x+0.05,7.95,8.05,0,HS));
-  [[18,19.7],[20.8,24.2],[25.3,27]].forEach(([a,b]) => wall(a,b,10.5-t/2,10.5+t/2));
-  [[19.7,20.8],[24.2,25.3]].forEach(([a,b]) => { B("lift",a,b,10.5-t/2,10.5+t/2+0.03,0,2.2); B("wall",a,b,10.5-t/2,10.5+t/2,2.2,H); });
+  B("glassP",18,27,10.48,10.52,0,HS); B("glassP",17.98,18.02,8,10.5,0,HS); B("glassP",26.98,27.02,8,10.5,0,HS); B("glassP",22.48,22.52,8,10.5,0,HS);
+  [18,22.5,27].forEach(x => B("frame",x-0.05,x+0.05,10.45,10.55,0,HS));
+  // lift doors face south onto the lobby on line 2a (no stop at Level 1, which is open to the entrance void)
+  if (n === 1) wall(18,27,8-t/2,8+t/2);
+  else {
+    [[18,19.7],[20.8,24.2],[25.3,27]].forEach(([a,b]) => wall(a,b,8-t/2,8+t/2));
+    [[19.7,20.8],[24.2,25.3]].forEach(([a,b]) => { B("lift",a,b,8-t/2-0.03,8+t/2,0,2.2); B("wall",a,b,8-t/2,8+t/2,2.2,H); });
+  }
   // open-plan desking, clusters of four in the 6 m bays
   const xs = [2.5,6.5,11.5,15.5,20.5,24.5,29.5,33.5,38.5,42.5];
   [3,18].forEach(yc => xs.forEach(xc => {
@@ -506,7 +535,7 @@ function interiorLayout(n){            // n = 0 ground ... 7: items standing on 
     B("screen",xc-1.6,xc+1.6,yc-0.015,yc+0.015,0.75,1.2);
     [-0.8,0.8].forEach(dx => [-1,1].forEach(dy => chair(xc+dx, yc+dy*1.15, dy)));
   }));
-  [[13.5,5.3],[31.5,5.3],[13.5,15.7],[31.5,15.7]].forEach(([x,y]) => { if (!(n <= 1 && y < 6 && x > 18 && x < 27)) plant(x,y); });
+  [[13.5,0.35],[31.5,0.35],[13.5,20.65],[31.5,20.65]].forEach(([x,y]) => plant(x,y));
   // meeting rooms (lines 2b–3 side of the corridor) and tea points, both sides of the lift core
   [[4,18],[27,41]].forEach(([a,b], side) => {
     const w = (b-a)/3;
@@ -529,9 +558,9 @@ function interiorLayout(n){            // n = 0 ground ... 7: items standing on 
     [18,27].forEach(x => { B("glassP",x-0.02,x+0.02,0,8,0,1.06); B("frame",x-0.03,x+0.03,0,8,1.06,1.12); });
   }
   if (n === 0){   // reception lobby
-    B("counter",20,25,6.0,6.8,0,1.1); B("table",19.9,25.1,5.95,6.85,1.1,1.14);
-    sofa(19.4,22,2.6,3.4,3.31); sofa(23,25.6,2.6,3.4,3.31);
-    B("table",21.2,23.8,1.4,2.1,0,0.4);
+    B("counter",24.9,25.7,1.6,4.4,0,1.1); B("table",24.85,25.75,1.55,4.45,1.1,1.14);
+    B("sofa",18.4,19.2,2.0,4.5,0,0.42); B("sofa",18.3,18.48,2.0,4.5,0.42,0.82);
+    B("table",19.6,20.3,2.6,3.9,0,0.4);
     plant(18.8,1.0); plant(26.2,1.0);
   }
   return it;
@@ -883,7 +912,7 @@ const FACES = {
   E:{p0:[W,0], d:[0,1], n:[1,0],  ry:Math.PI/2}
 };
 const finGroup = new THREE.Group(); finGroup.visible = false; scene.add(finGroup);
-let finBins = {}, finBuilt = null, entranceDoor = null;
+let finBins = {}, finBuilt = null, entranceDoor = null, rearDoor = null;
 const _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _yA = new THREE.Vector3(0,1,0);
 function bin(tag){ return finBins[tag] || (finBins[tag] = {group:new THREE.Group(), bars:[]}); }
 function facePos(f, u, z, off){ return V(f.p0[0]+f.d[0]*u+f.n[0]*off, f.p0[1]+f.d[1]*u+f.n[1]*off, z); }
@@ -910,11 +939,12 @@ function buildFinishes(style){
   finBins = {};
   const o = FIN.o, top = elev(8), ribbon = style === "ribbon";
   const sb = ribbon ? 0.6 : 0.55, st = ribbon ? 0.95 : 0.25;   // spandrel extent below / above each floor
-  const RANGES = { S:[[-o,18],[18,27],[27,W+o]], N:[[-o,W+o]], W:[[-o,6],[15,D+o]], E:[[-o,6],[15,D+o]] };
+  const RANGES = { S:[[-o,18],[18,20.5],[20.5,24.5],[24.5,27],[27,W+o]], N:[[-o,21.5],[21.5,23.5],[23.5,W+o]], W:[[-o,6],[15,D+o]], E:[[-o,6],[15,D+o]] };
   for (const fk in RANGES){
     const f = FACES[fk];
     RANGES[fk].forEach(([u0,u1]) => {
-      const ent = fk === "S" && u0 === 18;   // double-height entrance under the Level 1 void
+      const ent = fk === "S" && u0 >= 18 && u1 <= 27;   // double-height entrance under the Level 1 void
+      const doorR = (fk === "S" && u0 === 20.5) || (fk === "N" && u0 === 21.5), doorTop = fk === "S" ? 3.12 : 2.52;
       for (let n=1;n<=7;n++){
         if (ent && n === 1) continue;
         panel(n, f, u0,u1, elev(n)-sb, elev(n)+st, o+0.02, 0, FM.spandrel);
@@ -927,11 +957,12 @@ function buildFinishes(style){
       for (let s=1;s<=8;s++){
         if (ent && s === 1) continue;
         const tag = (ent && s === 2) ? 2 : s;
-        const gz0 = (s === 1 || (ent && s === 2)) ? 0 : elev(s-1)+st, gz1 = elev(s)-sb;
+        const first = s === 1 || (ent && s === 2);
+        const gz0 = first ? (doorR ? doorTop : 0) : elev(s-1)+st, gz1 = elev(s)-sb;
         panel(tag, f, u0,u1, gz0, gz1, o, 0, FM.glass);
-        const mz0 = ribbon ? gz0 : ((ent && s === 2) ? 0 : elev(s-1)), mz1 = ribbon ? gz1 : elev(s);
+        const mz0 = (ribbon || (doorR && first)) ? gz0 : ((ent && s === 2) ? 0 : elev(s-1)), mz1 = ribbon ? gz1 : elev(s);
         mul.forEach(u => bar(tag, f, u-0.035, u+0.035, mz0, mz1, o+0.08, 0.17));
-        if (s === 1 || (ent && s === 2)) bar(tag, f, u0,u1, 0, 0.12, o+0.07, 0.15);
+        if (first && !doorR) bar(tag, f, u0,u1, 0, 0.12, o+0.07, 0.15);
       }
       panel(8, f, u0,u1, top-sb, top+1.1, o+0.02, 0, FM.spandrel);
       bar(8, f, u0,u1, top-sb-0.04, top-sb+0.04, o+0.07, 0.15);
@@ -951,7 +982,12 @@ function buildFinishes(style){
   const dl = panel(2, S, 20.5,22.5, 0.12, 3.0, o+0.04, 0.05, FM.door), dr = panel(2, S, 22.5,24.5, 0.12, 3.0, o+0.04, 0.05, FM.door);
   bar(2, S, 18.5,26.5, 3.0, 3.12, o+0.09, 0.16);
   [20.5,24.5].forEach(u => bar(2, S, u-0.05,u+0.05, 0, 3.0, o+0.09, 0.16));
-  entranceDoor = {kind:"slide", leaves:[dl,dr], base:[dl.position.x, dr.position.x], cx:22.5, cy:-o, n:0, z:0, open:0, grp:bin(2).group, box:{x0:20.5,x1:24.5,y0:-o-0.1,y1:-o+0.1,z0:0,z1:3.0}};
+  const N_ = FACES.N;
+  const rl = panel(1, N_, 21.5,22.5, 0.05, 2.4, o+0.04, 0.05, FM.door), rr = panel(1, N_, 22.5,23.5, 0.05, 2.4, o+0.04, 0.05, FM.door);
+  bar(1, N_, 21.3,23.7, 2.4, 2.52, o+0.09, 0.16);
+  [21.5,23.5].forEach(u => bar(1, N_, u-0.05,u+0.05, 0, 2.4, o+0.09, 0.16));
+  rearDoor = {kind:"slide", slide:0.95, drill:true, leaves:[rl,rr], base:[rl.position.x, rr.position.x], cx:22.5, cy:D+o, n:0, z:0, open:0, grp:bin(1).group, box:{x0:21.5,x1:23.5,y0:D+o-0.1,y1:D+o+0.1,z0:0,z1:2.4}};
+  entranceDoor = {kind:"slide", slide:1.95, drill:true, leaves:[dl,dr], base:[dl.position.x, dr.position.x], cx:22.5, cy:-o, n:0, z:0, open:0, grp:bin(2).group, box:{x0:20.5,x1:24.5,y0:-o-0.1,y1:-o+0.1,z0:0,z1:3.0}};
   boxAt(2, 16.5,28.5, -o-3.2,-o, 3.95,4.2, FM.mullion);
   // roof: membrane, plant screen, lift overrun
   boxAt(8, -o,W+o, -o,D+o, top+0.13,top+0.2, FM.roof);
@@ -1010,12 +1046,12 @@ function buildInteriors(){
       const pivot = new THREE.Group(); pivot.position.copy(V(inner, y0+0.02, zf(n)));
       const w = y1 - y0 - 0.04, leaf = new THREE.Mesh(UNIT, kind === "stair" ? intMats.firedoor : intMats.door);
       leaf.scale.set(0.05, 2.08, w); leaf.position.set(0, 1.04, -w/2); pivot.add(leaf); g.add(pivot);
-      autoDoors.push({kind:"hinge", pivot, ang, cx:inner, cy:(y0+y1)/2, n, z:zf(n), open:0, grp:g, box:{x0:inner-0.04,x1:inner+0.04,y0,y1,z0:zf(n),z1:zf(n)+2.1}});
+      autoDoors.push({kind:"hinge", drill:kind === "stair", pivot, ang, cx:inner, cy:(y0+y1)/2, n, z:zf(n), open:0, grp:g, box:{x0:inner-0.04,x1:inner+0.04,y0,y1,z0:zf(n),z1:zf(n)+2.1}});
     }));
     // sliding lift landing doors
-    [[20.25,0],[24.75,1]].forEach(([xc, i]) => {
-      const leaves = [-1,1].map(sd => { const m = new THREE.Mesh(UNIT, intMats.lift); m.scale.set(0.55, 2.2, 0.04); m.position.copy(V(xc + sd*0.275, 10.6, zf(n) + 1.1)); g.add(m); return m; });
-      autoDoors.push({kind:"lift", car:liftCars[i], leaves, base:leaves.map(m => m.position.x), cx:xc, cy:10.6, n, z:zf(n), open:0, grp:g, box:{x0:xc-0.55,x1:xc+0.55,y0:10.44,y1:10.64,z0:zf(n),z1:zf(n)+2.2}});
+    if (n !== 1) [[20.25,0],[24.75,1]].forEach(([xc, i]) => {
+      const leaves = [-1,1].map(sd => { const m = new THREE.Mesh(UNIT, intMats.lift); m.scale.set(0.55, 2.2, 0.04); m.position.copy(V(xc + sd*0.275, 7.9, zf(n) + 1.1)); g.add(m); return m; });
+      autoDoors.push({kind:"lift", car:liftCars[i], leaves, base:leaves.map(m => m.position.x), cx:xc, cy:7.9, n, z:zf(n), open:0, grp:g, box:{x0:xc-0.55,x1:xc+0.55,y0:7.86,y1:8.06,z0:zf(n),z1:zf(n)+2.2}});
     });
     intGroup.add(g);
   }
@@ -1031,9 +1067,9 @@ const rndLift = seeded(11);
 [20.25, 24.75].forEach((xc, i) => {
   const g = new THREE.Group();
   const add = (mat,x0,x1,y0,y1,z0,z1) => { const m = new THREE.Mesh(UNIT, mat); m.scale.set(x1-x0, z1-z0, y1-y0); m.position.copy(V((x0+x1)/2,(y0+y1)/2,(z0+z1)/2)); g.add(m); return m; };
-  const a = xc-0.8, b = xc+0.8, y0 = 9.0, y1 = 10.4;
+  const a = xc-0.8, b = xc+0.8, y0 = 8.1, y1 = 9.5;
   liftFloors.push(add(carMat,a,b,y0,y1,-0.12,0));
-  add(carMat,a,b,y0,y1,2.4,2.55); add(carMat,a,b,y0,y0+0.05,0,2.4); add(carMat,a,a+0.05,y0,y1,0,2.4); add(carMat,b-0.05,b,y0,y1,0,2.4);
+  add(carMat,a,b,y0,y1,2.4,2.55); add(carMat,a,b,y1-0.05,y1,0,2.4); add(carMat,a,a+0.05,y0,y1,0,2.4); add(carMat,b-0.05,b,y0,y1,0,2.4);
   add(carLight,a+0.3,b-0.3,y0+0.3,y1-0.3,2.37,2.4);
   liftGroup.add(g);
   const start = i === 0 ? 0 : 5;
@@ -1042,10 +1078,11 @@ const rndLift = seeded(11);
 function updateLifts(dt){
   if (!liftGroup.visible) return;
   liftCars.forEach(c => {
+    if (drill.alarm){ if (c.at === 0){ c.wait = 5; c.calls = []; return; } c.calls = [0]; if (c.at != null) c.wait = Math.min(c.wait, 0.3); }   // fire recall to ground
     if (c.at != null){
       c.wait -= dt; if (c.wait > 0) return;
       let nt = c.calls.length ? c.calls.shift() : null;
-      if (nt == null){ do { nt = Math.floor(rndLift()*8); } while (nt === c.at); }
+      if (nt == null){ do { nt = Math.floor(rndLift()*8); } while (nt === c.at || nt === 1); }
       if (nt === c.at){ c.wait = 2; return; }
       c.target = nt; c.at = null;
     }
@@ -1428,7 +1465,8 @@ walkBtn.onclick = () => walk.on ? exitWalk() : enterWalk();
 function walkLevel(d){
   const car = carAt(playerPlan());
   if (car){   // riding a lift: choose the next floor
-    const tgt = Math.max(0, Math.min(7, nearestLevel(walk.feet) + d));
+    let tgt = Math.max(0, Math.min(7, nearestLevel(walk.feet) + d));
+    if (tgt === 1) tgt = d > 0 ? 2 : 0;   // no lift stop at Level 1
     car.calls = [tgt]; if (car.at != null) car.wait = Math.min(car.wait, 1.0);
     return;
   }
@@ -1511,9 +1549,9 @@ function playerPlan(){
 }
 function carAt(P){
   if (!P || !liftGroup.visible) return null;
-  return liftCars.find(c => Math.abs(P.x - c.xc) < 0.8 && P.y > 9.0 && P.y < 10.45 && Math.abs(P.f - c.z) < 0.6) || null;
+  return liftCars.find(c => Math.abs(P.x - c.xc) < 0.8 && P.y > 8.05 && P.y < 9.5 && Math.abs(P.f - c.z) < 0.6) || null;
 }
-function allDoors(){ return entranceDoor ? autoDoors.concat([entranceDoor]) : autoDoors; }
+function allDoors(){ return autoDoors.concat([entranceDoor, rearDoor].filter(Boolean)); }
 function updateDoors(dt){
   const P = playerPlan(), inCar = carAt(P);
   for (const d of allDoors()){
@@ -1524,13 +1562,13 @@ function updateDoors(dt){
       const c = d.car;
       want = c.at === d.n && c.wait > 0.9;
       if (near && !inCar){ if (c.at === d.n) c.wait = Math.max(c.wait, 1.6); else if (!c.calls.includes(d.n)) c.calls.push(d.n); }
-    } else want = near;
+    } else want = near || (!!d.drill && drill.alarm);
     const prev = d.open;
     d.open = Math.max(0, Math.min(1, d.open + (want ? 1 : -1) * dt / 0.6));
     if (d.open === prev) continue;
     const e = d.open * d.open * (3 - 2*d.open);
     if (d.kind === "hinge") d.pivot.rotation.y = d.ang * e;
-    else { const s = d.kind === "slide" ? 1.95 : 0.52; d.leaves[0].position.x = d.base[0] - s*e; d.leaves[1].position.x = d.base[1] + s*e; }
+    else { const s = d.slide || 0.52; d.leaves[0].position.x = d.base[0] - s*e; d.leaves[1].position.x = d.base[1] + s*e; }
   }
 }
 const NOCOL = new Set(["carpet","stone","tread","lift","door","sign","mirror"]);
@@ -1541,6 +1579,8 @@ function rebuildColliders(){
   colKey = key; colBuckets = {};
   const add = (n, c) => (colBuckets[n] = colBuckets[n] || []).push(c);
   for (let s=1;s<=NLEV;s++) COLS.forEach(([x,y]) => add(s-1, {x0:x-0.22,x1:x+0.22,y0:y-0.22,y1:y+0.22,z0:elev(s-1),z1:elev(s)}));
+  // vertical X-bracing: each braced bay is a solid panel for walking purposes
+  for (let s=1;s<=NLEV;s++) BRACES.forEach(b => add(s-1, {x0:Math.min(b.x1,b.x2)-0.1, x1:Math.max(b.x1,b.x2)+0.1, y0:Math.min(b.y1,b.y2)-0.1, y1:Math.max(b.y1,b.y2)+0.1, z0:elev(s-1), z1:elev(s)}));
   if (state.interior) for (let n=0;n<=7;n++) interiorLayout(n).forEach(b => {
     if (NOCOL.has(b.mat)) return;
     add(n, b.mat === "wall" ? Object.assign({}, b, {z1:Math.max(b.z1, zf(n+1))}) : b);
@@ -1551,7 +1591,8 @@ function rebuildColliders(){
       const z0 = elev(s-1), z1 = s === NLEV ? top : elev(s), n = s-1;
       if (s <= 2){ add(n,{x0:-o-th,x1:20.5,y0:-o-th,y1:-o+th,z0,z1}); add(n,{x0:24.5,x1:W+o+th,y0:-o-th,y1:-o+th,z0,z1}); add(n,{x0:20.5,x1:24.5,y0:-o-th,y1:-o+th,z0:s === 1 ? 3.0 : z0,z1}); }
       else add(n,{x0:-o-th,x1:W+o+th,y0:-o-th,y1:-o+th,z0,z1});
-      add(n,{x0:-o-th,x1:W+o+th,y0:D+o-th,y1:D+o+th,z0,z1});
+      if (s === 1){ add(n,{x0:-o-th,x1:21.5,y0:D+o-th,y1:D+o+th,z0,z1}); add(n,{x0:23.5,x1:W+o+th,y0:D+o-th,y1:D+o+th,z0,z1}); add(n,{x0:21.5,x1:23.5,y0:D+o-th,y1:D+o+th,z0:2.4,z1}); }
+      else add(n,{x0:-o-th,x1:W+o+th,y0:D+o-th,y1:D+o+th,z0,z1});
       add(n,{x0:-o-th,x1:-o+th,y0:-o-th,y1:D+o+th,z0,z1});
       add(n,{x0:W+o-th,x1:W+o+th,y0:-o-th,y1:D+o+th,z0,z1});
     }
@@ -1562,7 +1603,7 @@ function dynamicBoxes(){
   allDoors().forEach(d => { if (d.open < 0.85 && isShown(d.grp)) out.push(d.box); });
   if (liftGroup.visible) liftCars.forEach(c => {
     const a = c.xc - 0.8, b = c.xc + 0.8, z0 = c.z, z1 = c.z + 2.4;
-    out.push({x0:a,x1:b,y0:9.0,y1:9.06,z0,z1},{x0:a,x1:a+0.06,y0:9.0,y1:10.4,z0,z1},{x0:b-0.06,x1:b,y0:9.0,y1:10.4,z0,z1});
+    out.push({x0:a,x1:b,y0:9.44,y1:9.5,z0,z1},{x0:a,x1:a+0.06,y0:8.1,y1:9.5,z0,z1},{x0:b-0.06,x1:b,y0:8.1,y1:9.5,z0,z1});
   });
   return out;
 }
@@ -1588,10 +1629,170 @@ function moveWithCollision(p, dx, dy, feet){
   if (!blocked(p.x, p.y + dy, feet, dyn)) p.y += dy;
 }
 
+
+/* ---------- Fire drill: populate the floors, sound the alarm, evacuate by the stairs ---------- */
+const drill = { on:false, alarm:false, done:false, t:0, t0:0, endT:0, alarmAt:4, speed:1, agents:[], out:0, sound:true, audio:null, beepT:0, hudT:0, routes:{W:0,E:0,G:0} };
+const drillBtn = document.getElementById("drillBtn"), drillLabel = document.getElementById("drillLabel"), drillHud = document.getElementById("drillHud");
+const dAlarm = document.getElementById("drillAlarm"), dTime = document.getElementById("drillTime"), dBar = document.getElementById("drillBar");
+const dCount = document.getElementById("drillCount"), dStairs = document.getElementById("drillStairs");
+const dSpeed = document.getElementById("drillSpeed"), dSound = document.getElementById("drillSound"), dStop = document.getElementById("drillStop");
+const bodyGeo = new THREE.CylinderGeometry(0.16, 0.2, 1.15, 10); bodyGeo.translate(0, 0.575, 0);
+const headGeo = new THREE.SphereGeometry(0.12, 12, 10); headGeo.translate(0, 1.36, 0);
+const agentMat = new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.8});
+let bodyIM = null, headIM = null;
+const SHIRTS = [0x2F4A6B,0x6B6F73,0xE8E6E1,0x7A2E35,0x2E6B6B,0xB8A68A,0x3C3F44,0x8A5A2B,0x4A5D8A,0xC9C2B4];
+const SKIN = [0xF1C9A5,0xD9A27A,0xB07850,0x7E5236,0xE5B98E];
+function stairDown(n, X){
+  const P = [[X(3.4),11.05,zf(n)]];
+  for (let k=n;k>=1;k--){
+    const z1 = zf(k), z0 = zf(k-1), zm = (z0+z1)/2;
+    P.push([X(1.03),11.06,z1],[X(1.03),11.56,z1],[X(1.03),14.31,zm],[X(1.6),14.62,zm],[X(2.97),14.62,zm],[X(2.97),14.31,zm],[X(2.97),11.56,z0],[X(2.97),11.06,z0]);
+  }
+  return P;
+}
+function drillRoutes(rnd){
+  const out = []; let sK = 0, nK = 0;
+  const slotS = () => { const k = sK++; return [22.5 + ((k%14) - 6.5)*0.65, -6 - Math.floor(k/14)*0.65, 0]; };
+  const slotN = () => { const k = nK++; return [22.5 + ((k%14) - 6.5)*0.65, 26 + Math.floor(k/14)*0.65, 0]; };
+  const exitS = [[22.5,5.2,0],[22.5,0.3,0],[22.5,-1.3,0],[22.5,-3.2,0]];
+  const exitN = [[22.5,15.8,0],[22.5,20.6,0],[22.5,22.3,0],[22.5,24.2,0]];
+  const groundW = [[4.6,11.3,0],[8.5,11.3,0],[8.5,5.2,0]].concat(exitS);
+  const groundE = [[40.4,11.3,0],[24.8,11.3,0],[24.8,15.8,0]].concat(exitN);
+  const G = [4.5,9,13.5,18,22.5,27,31.5,36,40.5], Gs = [4.5,9,13.5,31.5,36,40.5];
+  const near = (x, list) => list.reduce((b,g) => Math.abs(g-x) < Math.abs(b-x) ? g : b, list[0]);
+  const xs = [2.5,6.5,11.5,15.5,20.5,24.5,29.5,33.5,38.5,42.5];
+  for (let n=0;n<=7;n++){
+    const z = zf(n), P = (x,y) => [x,y,z];
+    const viaStair = (pts, x) => {     // corridor point -> nearest stair -> down -> out by the matching ground exit
+      const west = x < 22.5, X = west ? (v => v) : (v => 45 - v);
+      return { pts: pts.concat([P(X(4.6),11.3), P(X(4.5),11.05)], stairDown(n, X), west ? groundW : groundE, [west ? slotS() : slotN()]), route: west ? "W" : "E" };
+    };
+    const add = r => { if (rnd() < 0.68) out.push(r()); };
+    xs.forEach(xc => [-0.8,0.8].forEach(dx => {
+      const x = xc + dx;
+      if (!(n <= 1 && xc > 18 && xc < 27)){
+        add(() => { const g = near(x, n <= 1 ? Gs : G), p = [P(x,1.3), P(x,0.95), P(g,0.95), P(g,5.2)];
+          if (n === 0) return { pts: p.concat(exitS, [slotS()]), route:"G" };
+          const c = x < 22.5 ? 8.5 : 36.5; return viaStair(p.concat([P(c,5.2), P(c,11.3)]), c); });
+        add(() => { const p = [P(x,4.7), P(x,5.2)];
+          if (n === 0) return { pts: p.concat(exitS, [slotS()]), route:"G" };
+          const c = x < 22.5 ? 8.5 : 36.5; return viaStair(p.concat([P(c,5.2), P(c,11.3)]), c); });
+      }
+      add(() => { const p = [P(x,16.3), P(x,15.8)];
+        if (n === 0) return { pts: p.concat(exitN, [slotN()]), route:"G" };
+        const c = x < 22.5 ? 20.2 : 24.8; return viaStair(p.concat([P(c,15.8), P(c,11.3)]), c); });
+      add(() => { const g = near(x, G), p = [P(x,19.7), P(x,20.05), P(g,20.05), P(g,15.8)];
+        if (n === 0) return { pts: p.concat(exitN, [slotN()]), route:"G" };
+        const c = x < 22.5 ? 20.2 : 24.8; return viaStair(p.concat([P(c,15.8), P(c,11.3)]), c); });
+    }));
+    [[4,18],[27,41]].forEach(([a,b]) => { const w = (b-a)/3; for (let k=0;k<3;k++){
+      const x0 = a + k*w, xm = x0 + w/2;
+      [-0.8,0,0.8].forEach(dx => [12.6,14.4].forEach(row => { if (rnd() < 0.3){
+        const x = xm + dx, d = x0 + 0.75, p = [P(x,row), P(x0+0.55,row), P(x0+0.55,12.5), P(d,11.9), P(d,11.3)];
+        if (n === 0){ const west = d < 22.5; out.push({ pts: p.concat(west ? [P(8.5,11.3), P(8.5,5.2)].concat(exitS, [slotS()]) : [P(24.8,11.3), P(24.8,15.8)].concat(exitN, [slotN()])), route:"G" }); }
+        else out.push(viaStair(p, d));
+      }}));
+    }});
+  }
+  return out;
+}
+function clearAgents(){
+  [bodyIM, headIM].forEach(m => { if (m){ scene.remove(m); m.dispose && m.dispose(); } });
+  bodyIM = headIM = null; drill.agents = [];
+}
+const _mA = new THREE.Matrix4(), _cA = new THREE.Color();
+function placeAgents(){
+  drill.agents.forEach((a,i) => {
+    const w = V(a.x, a.y, a.z);
+    _mA.makeTranslation(w.x, w.y, w.z);
+    bodyIM.setMatrixAt(i, _mA); headIM.setMatrixAt(i, _mA);
+  });
+  bodyIM.instanceMatrix.needsUpdate = true; headIM.instanceMatrix.needsUpdate = true;
+}
+function fmt(t){ t = Math.max(0, Math.floor(t)); return Math.floor(t/60) + ":" + String(t%60).padStart(2,"0"); }
+function startDrill(){
+  if (!state.interior) intBtn.click();
+  state.sel = "all"; state.sub = null; applySelection(false); updatePanel();
+  clearAgents();
+  const rnd = seeded(2026);
+  const routes = drillRoutes(rnd);
+  drill.agents = routes.map(r => ({ pts:r.pts, route:r.route, i:0, x:r.pts[0][0], y:r.pts[0][1], z:r.pts[0][2], v:1.05 + rnd()*0.45, delay:3 + rnd()*22, out:false }));
+  const N = drill.agents.length;
+  bodyIM = new THREE.InstancedMesh(bodyGeo, agentMat, N); headIM = new THREE.InstancedMesh(headGeo, agentMat, N);
+  for (let i=0;i<N;i++){ bodyIM.setColorAt(i, _cA.setHex(SHIRTS[Math.floor(rnd()*SHIRTS.length)])); headIM.setColorAt(i, _cA.setHex(SKIN[Math.floor(rnd()*SKIN.length)])); }
+  [bodyIM, headIM].forEach(m => { m.frustumCulled = false; m.instanceColor.needsUpdate = true; scene.add(m); });
+  placeAgents();
+  Object.assign(drill, { on:true, alarm:false, done:false, t:0, t0:0, endT:0, out:0, beepT:0, hudT:0, routes:{W:0,E:0,G:0} });
+  drill.agents.forEach(a => drill.routes[a.route]++);
+  try { if (!drill.audio) drill.audio = new (window.AudioContext || window.webkitAudioContext)(); drill.audio.resume && drill.audio.resume(); } catch(_){}
+  drillHud.hidden = false; drillBtn.setAttribute("aria-pressed","true"); drillLabel.textContent = "End drill";
+  dAlarm.className = "alarm"; dAlarm.textContent = "Building occupied";
+  updateDrillHud();
+}
+function stopDrill(){
+  clearAgents(); drill.on = false; drill.alarm = false;
+  drillHud.hidden = true; drillBtn.setAttribute("aria-pressed","false"); drillLabel.textContent = "Fire drill";
+}
+drillBtn.onclick = () => drill.on ? stopDrill() : startDrill();
+dStop.onclick = stopDrill;
+dSpeed.onclick = () => { drill.speed = drill.speed >= 8 ? 1 : drill.speed*2; dSpeed.textContent = "Speed " + drill.speed + "×"; };
+dSound.onclick = () => { drill.sound = !drill.sound; dSound.textContent = drill.sound ? "Sound on" : "Sound off"; dSound.setAttribute("aria-pressed", drill.sound); };
+function beep(){
+  if (!drill.sound || !drill.audio) return;
+  try {
+    const ctx = drill.audio, o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+    o.type = "square"; o.frequency.setValueAtTime(920, t); o.frequency.setValueAtTime(720, t + 0.25);
+    g.gain.setValueAtTime(0.03, t); g.gain.setValueAtTime(0, t + 0.5);
+    o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.52);
+  } catch(_){}
+}
+function updateDrillHud(){
+  const N = drill.agents.length;
+  if (!drill.alarm){ dTime.textContent = "0:00"; dCount.textContent = N + " people in the building"; }
+  else {
+    dTime.textContent = fmt(drill.done ? drill.endT : drill.t - drill.t0);
+    dCount.textContent = drill.done ? "All " + N + " people out in " + fmt(drill.endT) : drill.out + " of " + N + " people out";
+  }
+  dStairs.textContent = "West stair " + drill.routes.W + " · East stair " + drill.routes.E + " · Ground floor " + drill.routes.G;
+  dBar.style.width = (N ? 100*drill.out/N : 0) + "%";
+}
+function updateDrill(dt){
+  if (!drill.on) return;
+  const sdt = dt * drill.speed;
+  drill.t += sdt;
+  if (!drill.alarm && drill.t >= drill.alarmAt){
+    drill.alarm = true; drill.t0 = drill.t; drill.beepT = 0;
+    dAlarm.className = "alarm on"; dAlarm.textContent = "Fire alarm: evacuate";
+  }
+  if (drill.alarm){
+    if (!drill.done){ drill.beepT -= dt; if (drill.beepT <= 0){ beep(); drill.beepT = 0.9; } }
+    let moved = false;
+    for (const a of drill.agents){
+      if (a.out) continue;
+      if (a.delay > 0){ a.delay -= sdt; continue; }
+      let step = a.v * sdt; moved = true;
+      while (step > 0 && a.i < a.pts.length - 1){
+        const p = a.pts[a.i+1], dx = p[0]-a.x, dy = p[1]-a.y, dz = p[2]-a.z;
+        const L = Math.hypot(dx, dy, dz*2.5);
+        if (L <= step){ a.x = p[0]; a.y = p[1]; a.z = p[2]; a.i++; step -= L; }
+        else { const f = step/L; a.x += dx*f; a.y += dy*f; a.z += dz*f; step = 0; }
+      }
+      if (a.i >= a.pts.length - 1){ a.out = true; drill.out++; }
+    }
+    if (moved) placeAgents();
+    if (!drill.done && drill.out === drill.agents.length){
+      drill.done = true; drill.endT = drill.t - drill.t0;
+      dAlarm.className = "alarm ok"; dAlarm.textContent = "Building clear";
+    }
+  }
+  drill.hudT -= dt;
+  if (drill.hudT <= 0){ drill.hudT = 0.2; updateDrillHud(); }
+}
+
 let lastT = performance.now();
 function loop(t){
   const dt = Math.min(0.05, (t - lastT)/1000); lastT = t;
-  updateLifts(dt); updateDoors(dt);
+  updateLifts(dt); updateDoors(dt); updateDrill(dt);
   if (walk.on){ walkUpdate(dt); if (!document.getElementById("gl").hidden) renderer.render(scene, camera); return; }
   if (renderer.xr.isPresenting){ xrUpdate(dt); renderer.render(scene, camera); return; }
   if (anim.on){
